@@ -30,17 +30,23 @@
 									<span class="current">￥{{food.price}}</span>
 									<span class="old" v-if="food.oldPrice">￥{{food.oldPrice}}</span>
 								</div>
+								<div class="cartCtrl-wrapper">
+									<cart-ctrl :food="food"></cart-ctrl>
+								</div>
 							</div>
 						</li>
 					</ul>
 				</li>
 			</ul>
 		</div>
+		<shop-cart :seller="seller" :goods-info="goodsInfo"></shop-cart>
 	</div>
 </template>
 
 <script >
 	import BScroll from 'better-scroll'
+	import shopCart from '../shopcart/shopcart.vue'
+	import cartCtrl from '../cartctrl/cartctrl.vue'
 	export default {
 		data() {
 			return {
@@ -49,6 +55,7 @@
 				scrollY: ''
 			}
 		},
+		props: ['seller'],
 		created() {
 			this.$http.get('/api/goods').then((res) => {
 				if (res.body.errno === 0) {
@@ -74,6 +81,20 @@
 					}
 				}
 				return 0
+			},
+			goodsInfo() {
+				let infoArr = []
+				this.goods.forEach((good) => {
+					good.foods.forEach((food) => {
+						if (food.count) {
+							infoArr.push({
+								price: food.price,
+								count: food.count
+							})
+						}
+					})
+				})
+				return infoArr
 			}
 		},
 		methods: {
@@ -90,6 +111,7 @@
 					click: true
 				})
 				this.foodScroll = new BScroll(this.$refs.goodsWrapper, {
+					click: true,
 					probeType: 3
 				})
 				this.foodScroll.on('scroll', (pos) => {
@@ -106,6 +128,10 @@
 				}
 				// console.log(this.listHeight)
 			}
+		},
+		components: {
+			shopCart,
+			cartCtrl
 		}
 	}
 </script>
@@ -238,6 +264,11 @@
 								color: rgb(147,153,159);
 								text-decoration: line-through;
 							}
+						}
+						.cartCtrl-wrapper{
+							position: absolute;
+							right: -6px;
+							bottom: 12px;
 						}
 					}
 				}
