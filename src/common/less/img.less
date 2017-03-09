@@ -1,0 +1,6 @@
+.background-img(@str1, @str2) {
+    background-image: url(@str1);
+    @media (-webkit-min-device-pixel-ratio: 3), (min-device-pixel-ratio: 3) {
+        background-image: url(@str2);
+    }
+}
