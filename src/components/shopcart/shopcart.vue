@@ -20,14 +20,46 @@
 					<span class="price">{{payDescription}}</span>
 				</div>
 			</div>
+			<div class="ball-wrapper">
+				<ul>
+					<transition 
+					v-for="ball in ballsList" 
+					:key="ball.id" 
+					@before-enter="dropBeforeEnter" 
+					@enter="dropEnter" 
+					@after-enter="dropAfterEnter">
+						<li class="ball" v-show="ball.show"><span class="inner"></span></li>
+					</transition>
+					
+				</ul>
+			</div>
 		</div>
 	</div>
 </template>
 
 <script>
 	export default {
+		data() {
+			return {
+				ballsList: [{
+					show: false
+				}, {
+					show: false
+				}, {
+					show: false
+				}, {
+					show: false
+				}, {
+					show: false
+				}],
+				dropList: []
+			}
+		},
 		props: {
-			seller: Object,
+			seller: {
+				type: Object,
+				default: {}
+			},
 			goodsInfo: {
 				type: Array,
 				default: () => []
@@ -56,6 +88,53 @@
 					return `还差￥${diff}起送`
 				} else {
 					return '去结算'
+				}
+			}
+		},
+		methods: {
+			drop(target) {
+				// console.log(target)
+				for (var i = 0; i < this.ballsList.length; i++) {
+					let ball = this.ballsList[i]
+					if (!ball.show) {
+						ball.show = true
+						ball.el = target
+						this.dropList.push(ball)
+						return
+					}
+				}
+			},
+			dropBeforeEnter(el) {
+				for (var i = 0; i < this.dropList.length; i++) {
+					let ball = this.dropList[i]
+					let rect = ball.el.getBoundingClientRect()
+					let x = rect.left - 32
+					let y = -(window.innerHeight - rect.top - 20)
+					el.style.webkitTransform = `translate3d(0,${y}px,0)`
+					el.style.transform = `translate3d(0,${y}px,0)`
+					let inner = el.getElementsByClassName('inner')[0]
+					inner.style.webkitTransform = `translate3d(${x}px,0,0)`
+					inner.style.transfrom = `translate3d(${x}px,0,0)`
+					// console.log(inner, x, y)
+				}
+			},
+			dropEnter(el) {
+				// 触发vue重绘？为什么这样可以
+				/* eslint-disable no-unused-vars */
+				let rf = el.offsetHeight
+				this.$nextTick(() => {
+					el.style.webkitTransform = `translate3d(0,0,0)`
+					el.style.transform = `translate3d(0,0,0)`
+					let inner = el.getElementsByClassName('inner')[0]
+					inner.style.webkitTransform = `translate3d(0,0,0)`
+					inner.style.transfrom = `translate3d(0,0,0)`
+				})
+			},
+			dropAfterEnter(el) {
+				let ball = this.dropList.shift()
+				if (ball) {
+					ball.show = false
+					el.style.display = 'none'
 				}
 			}
 		}
@@ -154,6 +233,26 @@
 					&.clearing{
 						color: #fff;
 						background-color: #00b43c;
+					}
+				}
+			}
+			.ball-wrapper{
+				position: fixed;
+				left: 32px;
+				bottom: 20px;
+				z-index: 200;
+				.ball{
+					position: absolute;
+					left: 0;
+					bottom: 0;
+					transition: all 0.4s cubic-bezier(0.49, -0.29, 0.75, 0.41);
+					.inner{
+						display: inline-block;
+						width: 16px;
+						height: 16px;
+						border-radius: 50%;
+						background-color: rgb(0, 160, 220);
+						transition: all 0.4s linear;
 					}
 				}
 			}

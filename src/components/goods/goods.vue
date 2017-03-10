@@ -31,7 +31,7 @@
 									<span class="old" v-if="food.oldPrice">￥{{food.oldPrice}}</span>
 								</div>
 								<div class="cartCtrl-wrapper">
-									<cart-ctrl :food="food"></cart-ctrl>
+									<cart-ctrl :food="food" @addCart="addCart"></cart-ctrl>
 								</div>
 							</div>
 						</li>
@@ -39,7 +39,7 @@
 				</li>
 			</ul>
 		</div>
-		<shop-cart :seller="seller" :goods-info="goodsInfo"></shop-cart>
+		<shop-cart :seller="seller" :goods-info="goodsInfo" ref="shopCart"></shop-cart>
 	</div>
 </template>
 
@@ -69,6 +69,7 @@
 				}
 			})
 			this.supType = ['decrease', 'discount', 'special', 'invoice', 'guarantee']
+			// this.$on('add-cart', this.addCart)
 		},
 		computed: {
 			currentIndex() {
@@ -87,10 +88,7 @@
 				this.goods.forEach((good) => {
 					good.foods.forEach((food) => {
 						if (food.count) {
-							infoArr.push({
-								price: food.price,
-								count: food.count
-							})
+							infoArr.push(food)
 						}
 					})
 				})
@@ -127,6 +125,12 @@
 					this.listHeight.push(hight)
 				}
 				// console.log(this.listHeight)
+			},
+
+			// 接收子组件点击时的target
+			addCart(target) {
+				this.$refs.shopCart.drop(target)
+				// console.log(target)
 			}
 		},
 		components: {

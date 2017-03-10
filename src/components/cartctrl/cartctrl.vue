@@ -37,6 +37,9 @@
 				} else {
 					this.food.count ++
 				}
+
+				// 派发一个事件传递点击对象给父组件
+				this.$emit('addCart', e.target)
 			},
 			decCount(e) {
 				if (!e._constructed) {
@@ -67,11 +70,11 @@
 			transition: all 0.5s;
 			&.dec-enter{
 				opacity: 0;
-				transform: translate3D(24px, 0, 0) rotate(180deg);
+				transform: translate3d(24px, 0, 0) rotate(180deg);
 			}
 			&.dec-leave-active{
 				opacity: 0;
-				transform: translate3D(24px, 0, 0) rotate(180deg);
+				transform: translate3d(24px, 0, 0) rotate(180deg);
 			}
 		}
 		.count{
