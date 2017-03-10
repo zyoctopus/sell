@@ -83,6 +83,7 @@
 			line-height: 24px;
 			text-align: center;
 			font-size: 10px;
+			width: 20px;
 			color: rgb(147, 153, 159);
 			vertical-align: top;
 			padding: 6px 0;

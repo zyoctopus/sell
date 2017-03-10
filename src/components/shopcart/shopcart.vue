@@ -1,7 +1,7 @@
 <template>
 	<div class="shopcart">
 		<div class="content">
-			<div class="content-left">
+			<div class="content-left" @click="toggleShow">
 				<div class="icon-wrapper">
 					<div class="icon" :class="{'has-goods':totalCount>0}">
 						<span class="icon-shopping_cart"></span>
@@ -30,14 +30,35 @@
 					@after-enter="dropAfterEnter">
 						<li class="ball" v-show="ball.show"><span class="inner"></span></li>
 					</transition>
-					
 				</ul>
 			</div>
+			<transition name="pop">
+				<div class="shopcart-list" v-show="listShow">
+					<div class="shopcart-header">
+						<span class="title">购物车</span>
+						<span class="clear" @click="clearCart">清空</span>
+					</div>
+					<div class="shopcart-content" ref="shopcartContent">
+						<ul>
+							<li class="good-item" v-for="item in goodsInfo">
+								<span class="good-name">{{item.name}}</span>
+								<span class="price">￥{{item.price*item.count}}</span>
+								<cart-ctrl class="cart-ctrl" :food="item" @addCart="drop"></cart-ctrl>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</transition>
 		</div>
+		<transition name="mask">
+			<div class="cart-mask" v-show="listShow" @click="toggleShow"></div>
+		</transition>
 	</div>
 </template>
 
 <script>
+	import cartCtrl from '../cartctrl/cartctrl.vue'
+	import BScroll from 'better-scroll'
 	export default {
 		data() {
 			return {
@@ -52,7 +73,8 @@
 				}, {
 					show: false
 				}],
-				dropList: []
+				dropList: [],
+				flag: false
 			}
 		},
 		props: {
@@ -89,6 +111,25 @@
 				} else {
 					return '去结算'
 				}
+			},
+			listShow() {
+				if (!this.totalCount) {
+					this.flag = false
+					return false
+				}
+
+				if (this.flag) {
+					this.$nextTick(() => {
+						if (!this.scroll) {
+							this.scroll = new BScroll(this.$refs.shopcartContent, {
+								click: true
+							})
+						} else {
+							this.scroll.refresh()
+						}
+					})
+				}
+				return this.flag
 			}
 		},
 		methods: {
@@ -136,7 +177,22 @@
 					ball.show = false
 					el.style.display = 'none'
 				}
+			},
+			toggleShow() {
+				if (!this.totalCount) {
+					this.flag = false
+					return
+				}
+				this.flag = !this.flag
+			},
+			clearCart() {
+				this.goodsInfo.forEach((v) => {
+					v.count = 0
+				})
 			}
+		},
+		components: {
+			cartCtrl
 		}
 	}
 </script>
@@ -256,6 +312,76 @@
 					}
 				}
 			}
+			.shopcart-list{
+				position: absolute;
+				left: 0;
+				top: 0;
+				z-index: -1;
+				width: 100%;
+				transform: translate3d(0, -100%, 0);
+				transition: all 0.5s;
+				&.pop-enter,&.pop-leave-active{
+					transform: translate3d(0, 0, 0);
+				}
+				.shopcart-header{
+					height: 40px;
+					background-color: #f3f5f7;
+					padding: 0 18px;
+					line-height: 40px;
+					border-bottom: 2px solid rgba(7, 17, 27, 0.1);
+					.title{
+						font-size: 14px;
+						color: rgb(7, 17, 27);
+					}
+					.clear{
+						float: right;
+						font-size: 12px;
+						color: rgb(0, 160, 220);
+					}
+				}
+				.shopcart-content{
+					background-color: #fff;
+					padding: 0 18px;
+					max-height: 217px;
+					overflow: hidden;
+					.good-item{
+						position: relative;
+						height: 48px;
+						line-height: 48px;
+						border-bottom: 1px solid rgba(7, 17, 27, 0.1);
+						.good-name{
+							font-size: 14px;
+							color: rgb(7, 17, 27);
+						}
+						.price{
+							position: absolute;
+							right: 90px;
+							font-size: 14px;
+							font-weight: 700;
+							color: rgb(240, 20, 20);
+						}
+						.cart-ctrl{
+							float: right;
+							height: 100%;
+							padding: 6px 0;
+							box-sizing: border-box;
+						}
+					}
+				}
+			}
+		}
+		.cart-mask{
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			z-index: -2;
+			background-color: rgba(7, 17, 27, 0.6);
+			transition: all 0.5s;
+			&.mask-enter,&.mask-leave-active{
+				opacity: 0;
+			}			
 		}
 	}
 </style>

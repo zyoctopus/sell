@@ -69,7 +69,6 @@
 				}
 			})
 			this.supType = ['decrease', 'discount', 'special', 'invoice', 'guarantee']
-			// this.$on('add-cart', this.addCart)
 		},
 		computed: {
 			currentIndex() {
