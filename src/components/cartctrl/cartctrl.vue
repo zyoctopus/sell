@@ -1,14 +1,14 @@
 <template>
 	<div class="cartctrl">
 		<transition name="dec">
-			<div class="decrease" v-show="food.count>0" @click="decCount($event)">
+			<div class="decrease" v-show="food.count>0" @click.stop="decCount($event)">
 				<span class="icon-remove_circle_outline"></span>
 			</div>
 		</transition>
 		<div class="count" v-show="food.count>0">
 			<span class="num">{{food.count}}</span>
 		</div>
-		<div class="add" @click="addCount($event)">
+		<div class="add" @click.stop="addCount($event)">
 			<span class="icon-add_circle"></span>
 		</div>
 	</div>
@@ -20,8 +20,10 @@
 		props: {
 			food: {
 				type: Object,
-				default: {
-					count: 0
+				default: () => {
+					return {
+						count: 0
+					}
 				}
 			}
 		},

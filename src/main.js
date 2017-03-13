@@ -18,6 +18,9 @@ Vue.use(VueResource)
 let vr = new VueRouter({
         linkActiveClass: 'active',
         routes: [{
+            path: '/',
+            redirect: '/goods'
+        }, {
             path: '/goods',
             component: goods
         }, {
@@ -32,5 +35,9 @@ let vr = new VueRouter({
 new Vue({
     el: '#app',
     render: c => c(App),
+    // template: '<app></app>',
+    // components: {
+    //     App
+    // },
     router: vr
 })
